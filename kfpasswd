@@ -7943,7 +7943,7 @@ def generate_passwd(length, delimiter, special_characters):
 @click.option('--exclude_characters','-e',help='Special characters exclude list (give me a string)',type=str)
 @click.option('--max_characters','-m',help='Max length of password in characters',type=int,default=256,show_default=True)
 @click.option('--verbose','-v',help='Show verbose output',count=True,)
-@click.version_option(version=1.4,)
+@click.version_option(version=1.5,)
 
 def main(length, delimiter, allow_characters, exclude_characters, max_characters, verbose):
 
