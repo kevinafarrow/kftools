@@ -1,0 +1,49 @@
+#!/usr/bin/env python3
+
+
+import os
+import click
+import sys
+import shutil
+
+
+@click.command()
+@click.option(
+        '--restore',
+        '-r',
+        is_flag=True,
+        help='Restore files from /tmp',
+        )
+@click.argument('filename')
+@click.version_option(
+        version=1.0,
+        )
+
+def main(restore, filename):
+
+    vim_tmp_files = [ f'{filename}~', f'.{filename}.un~' ]
+    
+    if restore:
+        print(f'You have chosen to restore temp files for {filename}.')
+
+        for vtf in vim_tmp_files:
+            if os.path.exists(f'/tmp/{vtf}'):
+                print(f'Temp file {vtf} exists!')
+                shutil.move(f'/tmp/{vtf}', f'{os.getcwd()}/{vtf}')
+            else:
+                print(f'Temp file {vtf} has already been deleted by the OS :(')
+
+    else:
+        print(f'"Deleting" temp files for {filename}')
+        for vtf in vim_tmp_files:
+            try:
+                shutil.move(f'{os.getcwd()}/{vtf}', f'/tmp/{vtf}')
+            except IOError:
+                print(f'{vtf} does not exist!')
+
+        print(f'\nIt is recommended only to delete temp files once you know you will not have to un-do anything.')
+        print(f'If you "deleted" the files in error, simply run {sys.argv[0]} -r {filename} to restore the files.')
+
+
+if __name__ == '__main__':
+    main()
