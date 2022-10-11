@@ -1,0 +1,146 @@
+#!/usr/bin/env python3
+
+
+# The vision of this tool is to somewhat keep track of "what the heck was I doing?"
+# I want it to work as a literal stack so I can just keep track of what I'm doing
+
+
+import os
+import sys
+import click
+from pprint import pprint
+
+
+TERMINAL_SIZE = os.get_terminal_size()
+DISPLAY_WIDTH = TERMINAL_SIZE.columns
+STACK = []
+STACK_FILE = f"{os.path.expanduser('~')}/.stack/stack.cache"
+
+def welcome_statement():
+    # Welcome statement
+    printline()
+    print("Welcome to stack! Valid commands are:")
+    print("push             Push something onto the stack")
+    print("pop              Pop something off of the stack")
+    print("show or stack    Show the stack")
+    print("exit or quit     Quit the program")
+    print("help             Show these options")
+    print("Godspeed!")
+    printline()
+
+def printline(character='-'):
+    print(character * DISPLAY_WIDTH)
+
+def get_command():
+    command = input("> ")
+    return command.split(" ", 1) if " " in command else [command]
+
+def do_command(command):
+    try:
+        if command[0] in command_map.keys():
+            func = command_map[command[0]]
+            func(command[1]) if len(command) > 1 else func()
+        else:
+            print(f"Command {command[0]} not recognized. Try again.")
+    except Exception as e:
+        print(f"Hmm, it didn't like that. Try again. Exception: {e}")
+
+def print_stack():
+    i = len(STACK) - 1
+    for x in STACK[::-1]:
+        print(f"[{i}] {x}")
+        i -= 1
+
+def push_to_stack(obj):
+    print(f"Pushing to stack: {obj}")
+    STACK.append(obj)
+
+def pop_from_stack(obj=None):
+    if not obj:
+        obj = STACK.pop()
+        print(f"Popping from stack: {obj}")
+        return 0
+    try:
+        obj = int(obj)
+        obj = STACK.pop(obj)
+        print(f"Popping from stack: {obj}")
+        return 0
+    except:
+        pass
+    if type(obj) == str:
+        try:
+            print(f"Popping from stack: {obj}")
+            STACK.remove(obj)
+        except Exception as e:
+            print(f"Hmm, it didn't like that. Exception: {e}")
+        return 0
+
+def do_pass():
+    pass
+
+def quit():
+    save_desired = input("Do you want to save this stack? ")
+    save_desired = parse_yes_or_no(save_desired)
+    print(f"{save_desired.upper()} selected!")
+    if save_desired == 'yes':
+        save_stack()
+    print("QUITTING!")
+    sys.exit()
+
+def parse_yes_or_no(answer):
+    yeses = ['yes', 'y']
+    nos = ['no', 'n']
+    if answer.lower() in yeses:
+        return 'yes'
+    if answer.lower() in nos:
+        return 'no'
+
+def save_stack(stack_file=STACK_FILE):
+    global STACK
+    with open(stack_file, 'w') as f:
+        f.write("\n".join(STACK))
+
+def load_stack(stack_file=STACK_FILE):
+    global STACK
+    with open(stack_file, 'r') as f:
+        STACK = f.read().splitlines()
+
+def clear_screen():
+    os.system('clear')
+
+command_map = {
+    'push': push_to_stack,
+    'pop': pop_from_stack,
+    'show': print_stack,
+    'stack': print_stack,
+    'quit': quit,
+    'q': quit,
+    'exit': quit,
+    'exti': quit,
+    'help': welcome_statement,
+    'clear': clear_screen,
+    '': do_pass,
+}
+
+
+@click.command()
+@click.option("--load","-l",help="Load last stack from default file",is_flag=True)
+
+def main(load):
+
+    welcome_statement()
+
+    if load:
+        STACK = load_stack()
+
+    # Do the stack stuff
+    while True:
+        command = get_command()
+        do_command(command)
+
+
+    return 0
+
+
+if __name__ == '__main__':
+    main()
