@@ -11,6 +11,7 @@
 # https://www.eff.org/deeplinks/2016/07/new-wordlists-random-passphrases
 
 from operator import le
+import pyperclip
 from sre_parse import SPECIAL_CHARS
 import sys
 import pandas as pd
@@ -7960,6 +7961,8 @@ def main(length, delimiter, allow_characters, exclude_characters, max_characters
                 break
             attempt += 1
         length -= 1
+
+    pyperclip.copy(pw)
 
     if verbose:
         print()
