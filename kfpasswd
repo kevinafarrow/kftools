@@ -7943,10 +7943,11 @@ def generate_passwd(length, delimiter, special_characters):
 @click.option('--allow_characters','-a',help='Special characters allow list (give me a string)',type=str)
 @click.option('--exclude_characters','-e',help='Special characters exclude list (give me a string)',type=str)
 @click.option('--max_characters','-m',help='Max length of password in characters',type=int,default=256,show_default=True)
+@click.option('--no_clipboard','-n',help='Suppress the copy to clipboard function (headless)',is_flag=True)
 @click.option('--verbose','-v',help='Show verbose output',count=True,)
 @click.version_option(version=1.5,)
 
-def main(length, delimiter, allow_characters, exclude_characters, max_characters, verbose):
+def main(length, delimiter, allow_characters, exclude_characters, max_characters, no_clipboard, verbose):
 
     special_characters = get_special(allow_characters, exclude_characters)
 
@@ -7962,7 +7963,8 @@ def main(length, delimiter, allow_characters, exclude_characters, max_characters
             attempt += 1
         length -= 1
 
-    pyperclip.copy(pw)
+    if not no_clipboard:
+        pyperclip.copy(pw)
 
     if verbose:
         print()

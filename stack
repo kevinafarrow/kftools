@@ -25,6 +25,9 @@ def welcome_statement():
     print("show or stack    Show the stack")
     print("exit or quit     Quit the program")
     print("help             Show these options")
+    print("clear            Clear the screen")
+    print("cs               Clear and show stack")
+    print()
     print("Godspeed!")
     printline()
 
@@ -59,11 +62,15 @@ def pop_from_stack(obj=None):
     if not obj:
         obj = STACK.pop()
         print(f"Popping from stack: {obj}")
+        print()
+        print_stack()
         return 0
     try:
         obj = int(obj)
         obj = STACK.pop(obj)
         print(f"Popping from stack: {obj}")
+        print()
+        print_stack()
         return 0
     except:
         pass
@@ -71,8 +78,12 @@ def pop_from_stack(obj=None):
         try:
             print(f"Popping from stack: {obj}")
             STACK.remove(obj)
+            print()
+            print_stack()
         except Exception as e:
             print(f"Hmm, it didn't like that. Exception: {e}")
+            print()
+            print_stack()
         return 0
 
 def do_pass():
@@ -108,6 +119,10 @@ def load_stack(stack_file=STACK_FILE):
 def clear_screen():
     os.system('clear')
 
+def clear_and_stack():
+    clear_screen()
+    print_stack()
+
 command_map = {
     'push': push_to_stack,
     'pop': pop_from_stack,
@@ -120,6 +135,7 @@ command_map = {
     'help': welcome_statement,
     'clear': clear_screen,
     '': do_pass,
+    'cs': clear_and_stack,
 }
 
 
@@ -129,6 +145,13 @@ command_map = {
 def main(load):
 
     welcome_statement()
+
+    if not load:
+        valid = {'y': True, 'n': False}
+        answer = ''
+        while answer not in valid.keys():
+            answer = input('Do you want to load the previous stack? ').lower()[0]
+        load = valid[answer]
 
     if load:
         STACK = load_stack()
